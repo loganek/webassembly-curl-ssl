@@ -1,3 +1,4 @@
 wasi-sdk-20.0-linux.tar.gz
 wasi-sdk-20.0/
 build/
+install/

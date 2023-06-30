@@ -33,3 +33,7 @@ jobs:
         run: |
           cp -Lr /etc/ssl/certs/* build/libs_install/ssl/certs/
           CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
+
+      - name: Install files
+        run: |
+          cmake --install build

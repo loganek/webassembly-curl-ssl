@@ -48,7 +48,12 @@ This internally downloads WASI SDK and runs `cmake` command to configure the pro
 cmake --build build
 ```
 
-The compiled libraries, executables and include headers can be found in `build/libs_install` directory.
+## Access compiled libraries and headers
+Run the command:
+```bash
+cmake --install build
+```
+The compiled libraries, executables and include headers will be available in the `install/` directory.
 
 ## Tests / Examples
 Some of the examples using libcurl can be found in [tests](./tests). To run examples using WAMR, execute the command:

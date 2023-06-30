@@ -18,3 +18,13 @@ add_subdirectory(libs/curl)
 
 enable_testing()
 add_subdirectory(tests)
+
+install(DIRECTORY
+    ${DEPS_INSTALL_DIR}/lib/
+    TYPE LIB)
+install(DIRECTORY
+    ${DEPS_INSTALL_DIR}/include/
+    TYPE INCLUDE)
+install(DIRECTORY
+    ${DEPS_INSTALL_DIR}/bin/
+    TYPE BIN)

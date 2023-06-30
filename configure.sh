@@ -18,4 +18,5 @@ cmake \
     -S. \
     -Bbuild \
     -DCMAKE_TOOLCHAIN_FILE=${WASI_SDK_DIR}/share/cmake/wasi-sdk-pthread.cmake \
-    -DWASI_SDK_PREFIX=${WASI_SDK_DIR}
+    -DWASI_SDK_PREFIX=${WASI_SDK_DIR} \
+    -DCMAKE_INSTALL_PREFIX=install
