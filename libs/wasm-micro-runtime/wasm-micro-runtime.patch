@@ -1,3 +1,16 @@
+diff --git a/core/config.h b/core/config.h
+index 2c382d17..0d99d580 100644
+--- a/core/config.h
++++ b/core/config.h
+@@ -384,7 +384,7 @@
+ #define APP_THREAD_STACK_SIZE_DEFAULT (64 * 1024)
+ #define APP_THREAD_STACK_SIZE_MIN (48 * 1024)
+ #else
+-#define APP_THREAD_STACK_SIZE_DEFAULT (32 * 1024)
++#define APP_THREAD_STACK_SIZE_DEFAULT (64 * 1024)
+ #define APP_THREAD_STACK_SIZE_MIN (24 * 1024)
+ #endif
+ #endif /* end of !(defined(APP_THREAD_STACK_SIZE_DEFAULT) \
 diff --git a/core/iwasm/libraries/lib-socket/inc/wasi_socket_ext.h b/core/iwasm/libraries/lib-socket/inc/wasi_socket_ext.h
 index c9a07eb7..11814ab8 100644
 --- a/core/iwasm/libraries/lib-socket/inc/wasi_socket_ext.h
@@ -5,16 +18,16 @@ index c9a07eb7..11814ab8 100644
 @@ -84,7 +84,7 @@ typedef struct __wasi_addr_t {
      } addr;
  } __wasi_addr_t;
-
+ 
 -typedef enum { INET4 = 0, INET6 } __wasi_address_family_t;
 +typedef enum { INET4 = 0, INET6, INET_UNSPEC } __wasi_address_family_t;
-
+ 
  typedef struct __wasi_addr_info_t {
      __wasi_addr_t addr;
 @@ -133,6 +133,18 @@ typedef struct __wasi_addr_info_hints_t {
  #define IPV6_LEAVE_GROUP 21
  #define IPV6_V6ONLY 26
-
+ 
 +struct hostent
 +{
 +    char *h_name;             /* Official name of host.  */
@@ -51,10 +64,10 @@ index feadf2f9..c92674f7 100644
 @@ -605,7 +605,7 @@ typedef struct __wasi_addr_t {
      } addr;
  } __wasi_addr_t;
-
+ 
 -typedef enum { INET4 = 0, INET6 } __wasi_address_family_t;
 +typedef enum { INET4 = 0, INET6, INET_UNSPEC } __wasi_address_family_t;
-
+ 
  typedef struct __wasi_addr_info_t {
      __wasi_addr_t addr;
 diff --git a/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c b/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c
@@ -62,11 +75,11 @@ index 61e84183..6c0e2755 100644
 --- a/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c
 +++ b/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c
 @@ -3103,7 +3103,7 @@ wasi_ssp_sock_addr_resolve(
-
+ 
      int ret = os_socket_addr_resolve(
          host, service, hints->hints_enabled ? &hints_is_tcp : NULL,
 -        hints->hints_enabled ? &hints_is_ipv4 : NULL, wamr_addr_info,
 +        hints->hints_enabled && hints->family != INET_UNSPEC ? &hints_is_ipv4 : NULL, wamr_addr_info,
          addr_info_size, &_max_info_size);
-
+ 
      if (ret != BHT_OK) {

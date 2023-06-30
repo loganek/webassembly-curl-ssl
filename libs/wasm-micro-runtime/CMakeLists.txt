@@ -7,7 +7,6 @@ ExternalProject_Add(
     PATCH_COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/src && patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/wasm-micro-runtime.patch
     CMAKE_ARGS
         -DWAMR_BUILD_INTERP=1
-        -DWAMR_DISABLE_HW_BOUND_CHECK=1
         -DWAMR_BUILD_AOT=0
         -DWAMR_BUILD_JIT=0
         -DWAMR_BUILD_FAST_JIT=0
