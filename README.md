@@ -57,5 +57,10 @@ Some of the examples using libcurl can be found in [tests](./tests). To run exam
 cmake --build build --target test
 ```
 
+Please note the tests require valid ssl certificates to be located in `build/libs_instal/ssl/certs`. They can be copied from the system path, e.g. on Ubuntu it's (add `-L` flag to resolve symlinks):
+```bash
+cp -Lr /etc/ssl/certs/* build/libs_install/ssl/certs/
+```
+
 ## License
 This code sample is released under the MIT license. By contributing to the project, you agree to the license and copyright terms therein and release your contribution under these terms.
