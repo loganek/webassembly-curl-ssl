@@ -1,0 +1,9 @@
+[submodule "libs/curl/src"]
+	path = libs/curl/src
+	url = https://github.com/curl/curl.git
+[submodule "libs/wasm-micro-runtime/src"]
+	path = libs/wasm-micro-runtime/src
+	url = https://github.com/bytecodealliance/wasm-micro-runtime.git
+[submodule "libs/openssl/src"]
+	path = libs/openssl/src
+	url = https://github.com/openssl/openssl.git

@@ -1,0 +1,72 @@
+diff --git a/core/iwasm/libraries/lib-socket/inc/wasi_socket_ext.h b/core/iwasm/libraries/lib-socket/inc/wasi_socket_ext.h
+index c9a07eb7..11814ab8 100644
+--- a/core/iwasm/libraries/lib-socket/inc/wasi_socket_ext.h
++++ b/core/iwasm/libraries/lib-socket/inc/wasi_socket_ext.h
+@@ -84,7 +84,7 @@ typedef struct __wasi_addr_t {
+     } addr;
+ } __wasi_addr_t;
+
+-typedef enum { INET4 = 0, INET6 } __wasi_address_family_t;
++typedef enum { INET4 = 0, INET6, INET_UNSPEC } __wasi_address_family_t;
+
+ typedef struct __wasi_addr_info_t {
+     __wasi_addr_t addr;
+@@ -133,6 +133,18 @@ typedef struct __wasi_addr_info_hints_t {
+ #define IPV6_LEAVE_GROUP 21
+ #define IPV6_V6ONLY 26
+
++struct hostent
++{
++    char *h_name;             /* Official name of host.  */
++    char **h_aliases;         /* Alias list.  */
++    int h_addrtype;           /* Host address type.  */
++    int h_length;             /* Length of address.  */
++    char **h_addr_list;       /* List of addresses from name server.  */
++#ifdef __USE_MISC
++#define h_addr h_addr_list[0] /* Address, for backward compatibility.*/
++#endif
++};
++
+ struct addrinfo {
+     int ai_flags;             /* Input flags.  */
+     int ai_family;            /* Protocol family for socket.  */
+diff --git a/core/iwasm/libraries/lib-socket/src/wasi/wasi_socket_ext.c b/core/iwasm/libraries/lib-socket/src/wasi/wasi_socket_ext.c
+index defbc6ef..a2a0a129 100644
+--- a/core/iwasm/libraries/lib-socket/src/wasi/wasi_socket_ext.c
++++ b/core/iwasm/libraries/lib-socket/src/wasi/wasi_socket_ext.c
+@@ -430,6 +430,9 @@ addrinfo_hints_to_wasi_hints(const struct addrinfo *hints,
+             case AF_INET6:
+                 wasi_hints->family = INET6;
+                 break;
++            case AF_UNSPEC:
++                wasi_hints->family = INET_UNSPEC;
++                break;
+             default:
+                 return __WASI_ERRNO_AFNOSUPPORT;
+         }
+diff --git a/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/include/wasmtime_ssp.h b/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/include/wasmtime_ssp.h
+index feadf2f9..c92674f7 100644
+--- a/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/include/wasmtime_ssp.h
++++ b/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/include/wasmtime_ssp.h
+@@ -605,7 +605,7 @@ typedef struct __wasi_addr_t {
+     } addr;
+ } __wasi_addr_t;
+
+-typedef enum { INET4 = 0, INET6 } __wasi_address_family_t;
++typedef enum { INET4 = 0, INET6, INET_UNSPEC } __wasi_address_family_t;
+
+ typedef struct __wasi_addr_info_t {
+     __wasi_addr_t addr;
+diff --git a/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c b/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c
+index 61e84183..6c0e2755 100644
+--- a/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c
++++ b/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c
+@@ -3103,7 +3103,7 @@ wasi_ssp_sock_addr_resolve(
+
+     int ret = os_socket_addr_resolve(
+         host, service, hints->hints_enabled ? &hints_is_tcp : NULL,
+-        hints->hints_enabled ? &hints_is_ipv4 : NULL, wamr_addr_info,
++        hints->hints_enabled && hints->family != INET_UNSPEC ? &hints_is_ipv4 : NULL, wamr_addr_info,
+         addr_info_size, &_max_info_size);
+
+     if (ret != BHT_OK) {

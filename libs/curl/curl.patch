@@ -1,0 +1,121 @@
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index c44639d30..3750d1959 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -21,6 +21,8 @@
+ # SPDX-License-Identifier: curl
+ #
+ ###########################################################################
++
++include(${WAMR_ROOT_DIR}/core/iwasm/libraries/lib-socket/lib_socket_wasi.cmake)
+ set(LIB_NAME libcurl)
+ set(LIBCURL_OUTPUT_NAME libcurl CACHE STRING "Basename of the curl library")
+ add_definitions(-DBUILDING_LIBCURL)
+@@ -79,7 +81,7 @@ if(NOT BUILD_SHARED_LIBS)
+     set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_COMPILE_DEFINITIONS CURL_STATICLIB)
+ endif()
+ 
+-target_link_libraries(${LIB_NAME} PRIVATE ${CURL_LIBS})
++target_link_libraries(${LIB_NAME} PRIVATE socket_wasi_ext ${CURL_LIBS})
+ 
+ transform_makefile_inc("Makefile.soname" "${CMAKE_CURRENT_BINARY_DIR}/Makefile.soname.cmake")
+ include(${CMAKE_CURRENT_BINARY_DIR}/Makefile.soname.cmake)
+@@ -155,14 +157,14 @@ target_include_directories(${LIB_NAME} INTERFACE
+   $<BUILD_INTERFACE:${CURL_SOURCE_DIR}/include>)
+ 
+ if(CURL_ENABLE_EXPORT_TARGET)
+-  install(TARGETS ${LIB_NAME}
++  install(TARGETS ${LIB_NAME} socket_wasi_ext
+     EXPORT ${TARGETS_EXPORT_NAME}
+     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+   )
+ 
+-  export(TARGETS ${LIB_NAME}
++  export(TARGETS ${LIB_NAME} socket_wasi_ext
+          FILE ${PROJECT_BINARY_DIR}/libcurl-target.cmake
+          NAMESPACE ${PROJECT_NAME}::
+   )
+diff --git a/lib/curl_setup.h b/lib/curl_setup.h
+index 38cf6ffc1..c20574d8a 100644
+--- a/lib/curl_setup.h
++++ b/lib/curl_setup.h
+@@ -248,6 +248,14 @@
+ #  include "setup-win32.h"
+ #endif
+ 
++/*
++ * WebAssembly/WASI setup file includes some system headers and definitions.
++ */
++
++#ifdef __wasi__
++#  include "setup-wasm32-wasi.h"
++#endif
++
+ #include <curl/system.h>
+ 
+ /*
+diff --git a/lib/setup-wasm32-wasi.h b/lib/setup-wasm32-wasi.h
+new file mode 100644
+index 000000000..470b8847f
+--- /dev/null
++++ b/lib/setup-wasm32-wasi.h
+@@ -0,0 +1,57 @@
++#ifndef HEADER_CURL_SETUP_WASM32_WASI_H
++#define HEADER_CURL_SETUP_WASM32_WASI_H
++/***************************************************************************
++ *                                  _   _ ____  _
++ *  Project                     ___| | | |  _ \| |
++ *                             / __| | | | |_) | |
++ *                            | (__| |_| |  _ <| |___
++ *                             \___|\___/|_| \_\_____|
++ *
++ * Copyright (C) Marcin Kolny, <marcin.kolny@gmail.com>, et al.
++ *
++ * This software is licensed as described in the file COPYING, which
++ * you should have received as part of this distribution. The terms
++ * are also available at https://curl.se/docs/copyright.html.
++ *
++ * You may opt to use, copy, modify, merge, publish, distribute and/or sell
++ * copies of the Software, and permit persons to whom the Software is
++ * furnished to do so, under the terms of the COPYING file.
++ *
++ * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
++ * KIND, either express or implied.
++ *
++ * SPDX-License-Identifier: curl
++ *
++ ***************************************************************************/
++
++#ifndef OS
++#define OS "WASI"
++#endif
++
++/* WebAssembly Micro Runtime WASI socket extension
++ * as there's no netdb.h in WASI as of now */
++#include <sys/socket.h>
++#include <wasi_socket_ext.h>
++
++#define HAVE_SOCKET
++
++/* WASI doesn't have a complete definition of the sockaddr_un struct */
++#undef HAVE_SYS_UN_H
++
++#define HAVE_GETADDRINFO
++#define HAVE_GETADDRINFO_THREADSAFE
++
++/* WASI currently doesn't define PF_* macros. See
++ * https://github.com/WebAssembly/wasi-libc/pull/426 */
++#define PF_INET AF_INET
++#define PF_INET6 AF_INET6
++#define PF_UNSPEC AF_UNSPEC
++
++#define POLLPRI 0x0
++
++#define SOL_IP -1
++
++#define EAI_MEMORY ENOMEM
++#define EAI_NODATA -1
++
++#endif /* HEADER_CURL_SETUP_WASM32_WASI_H */

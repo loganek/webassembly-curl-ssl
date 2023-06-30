@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt update && sudo apt install -y cmake
+
+      - name: Configure project
+        run: |
+          ./configure.sh
+
+      - name: Build
+        run: |
+          cmake --build build --parallel 4
+
+      - name: Run tests
+        run: |
+          cp -Lr /etc/ssl/certs/* build/libs_install/ssl/certs/
+          CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
