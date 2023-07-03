@@ -31,6 +31,7 @@ ExternalProject_Add(
             no-tests
             no-apps
             no-weak-ssl-ciphers
+            no-afalgeng
             CROSSCOMPILE=""
             AR=${WASI_SDK_DIR}/bin/llvm-ar
             RANLIB=${WASI_SDK_DIR}/bin/llvm-ranlib
