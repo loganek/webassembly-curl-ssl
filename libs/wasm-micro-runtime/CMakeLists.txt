@@ -4,7 +4,6 @@ include(ExternalProject)
 ExternalProject_Add(
     wasm-micro-runtime
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/product-mini/platforms/linux
-    PATCH_COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/src && patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/wasm-micro-runtime.patch
     CMAKE_ARGS
         -DWAMR_BUILD_INTERP=1
         -DWAMR_BUILD_AOT=0

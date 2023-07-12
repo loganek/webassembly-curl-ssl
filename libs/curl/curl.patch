@@ -14,15 +14,15 @@ index c44639d30..3750d1959 100644
 @@ -79,7 +81,7 @@ if(NOT BUILD_SHARED_LIBS)
      set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_COMPILE_DEFINITIONS CURL_STATICLIB)
  endif()
- 
+
 -target_link_libraries(${LIB_NAME} PRIVATE ${CURL_LIBS})
 +target_link_libraries(${LIB_NAME} PRIVATE socket_wasi_ext ${CURL_LIBS})
- 
+
  transform_makefile_inc("Makefile.soname" "${CMAKE_CURRENT_BINARY_DIR}/Makefile.soname.cmake")
  include(${CMAKE_CURRENT_BINARY_DIR}/Makefile.soname.cmake)
 @@ -155,14 +157,14 @@ target_include_directories(${LIB_NAME} INTERFACE
    $<BUILD_INTERFACE:${CURL_SOURCE_DIR}/include>)
- 
+
  if(CURL_ENABLE_EXPORT_TARGET)
 -  install(TARGETS ${LIB_NAME}
 +  install(TARGETS ${LIB_NAME} socket_wasi_ext
@@ -31,7 +31,7 @@ index c44639d30..3750d1959 100644
      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
    )
- 
+
 -  export(TARGETS ${LIB_NAME}
 +  export(TARGETS ${LIB_NAME} socket_wasi_ext
           FILE ${PROJECT_BINARY_DIR}/libcurl-target.cmake
@@ -44,7 +44,7 @@ index 38cf6ffc1..c20574d8a 100644
 @@ -248,6 +248,14 @@
  #  include "setup-win32.h"
  #endif
- 
+
 +/*
 + * WebAssembly/WASI setup file includes some system headers and definitions.
 + */
@@ -54,14 +54,14 @@ index 38cf6ffc1..c20574d8a 100644
 +#endif
 +
  #include <curl/system.h>
- 
+
  /*
 diff --git a/lib/setup-wasm32-wasi.h b/lib/setup-wasm32-wasi.h
 new file mode 100644
 index 000000000..470b8847f
 --- /dev/null
 +++ b/lib/setup-wasm32-wasi.h
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,70 @@
 +#ifndef HEADER_CURL_SETUP_WASM32_WASI_H
 +#define HEADER_CURL_SETUP_WASM32_WASI_H
 +/***************************************************************************
@@ -117,5 +117,18 @@ index 000000000..470b8847f
 +
 +#define EAI_MEMORY ENOMEM
 +#define EAI_NODATA -1
++
++/* Add missing struct definition - WASI doesn't have that yet */
++struct hostent
++{
++    char *h_name;             /* Official name of host.  */
++    char **h_aliases;         /* Alias list.  */
++    int h_addrtype;           /* Host address type.  */
++    int h_length;             /* Length of address.  */
++    char **h_addr_list;       /* List of addresses from name server.  */
++#ifdef __USE_MISC
++#define h_addr h_addr_list[0] /* Address, for backward compatibility.*/
++#endif
++};
 +
 +#endif /* HEADER_CURL_SETUP_WASM32_WASI_H */
