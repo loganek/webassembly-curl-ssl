@@ -9,7 +9,6 @@ ExternalProject_Add(
     OpenSSL
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
     BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
-    PATCH_COMMAND patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/openssl.patch
     CONFIGURE_COMMAND
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Configure
             --banner="WebAssembly WASI OpenSSL"
