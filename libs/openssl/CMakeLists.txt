@@ -36,11 +36,11 @@ ExternalProject_Add(
             AR=${WASI_SDK_DIR}/bin/llvm-ar
             RANLIB=${WASI_SDK_DIR}/bin/llvm-ranlib
             "CC=${WASI_SDK_DIR}/bin/clang --target=wasm32-wasi-threads"
+            "CPPFLAGS=-Dgetpid=getpagesize"
     BUILD_COMMAND
         make -j ${CPU_COUNT}
             CFLAGS=-Ofast
             LDFLAGS=-s
-            "CPPFLAGS=-DUSE_TIMEGM=1 -Dgetpid=getpagesize -Dgetuid=getpagesize -Dgeteuid=getpagesize -Dgetgid=getpagesize -Dgetegid=getpagesize"
     TEST_COMMAND ""
     INSTALL_COMMAND make install
 )
