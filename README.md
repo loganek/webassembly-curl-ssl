@@ -20,10 +20,11 @@ The project was only tested on Ubuntu 20.04 and 22.04. It will most likely compi
 - [X] NTLM
 - [X] HTTPS-proxy
 - [X] threadsafe
+- [X] CURL executable
 ### Missing features
 - [ ] compression (brotli, zlib)
 - [ ] c-ares
-- [ ] build CURL executable
+- [ ] websockets
 - [ ] ...
 
 ## Custom patches

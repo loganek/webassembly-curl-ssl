@@ -13,12 +13,16 @@ endfunction()
 create_example(simple)
 create_example(multi)
 
+set(IWASM_AND_PARAMS
+    ${DEPS_INSTALL_DIR}/bin/iwasm
+    --dir=${DEPS_INSTALL_DIR}
+    --addr-pool=0.0.0.0/0
+    --allow-resolve=*)
+
 add_test(
     NAME simple
-    COMMAND ${DEPS_INSTALL_DIR}/bin/iwasm
-        --dir=${DEPS_INSTALL_DIR}
-        --addr-pool=0.0.0.0/0
-        --allow-resolve=*
+    COMMAND
+        ${IWASM_AND_PARAMS}
         simple.wasm
         ${DEPS_INSTALL_DIR}/ssl/certs/
         https://github.com/
@@ -26,12 +30,27 @@ add_test(
 
 add_test(
     NAME multi
-    COMMAND ${DEPS_INSTALL_DIR}/bin/iwasm
-        --dir=${DEPS_INSTALL_DIR}
-        --addr-pool=0.0.0.0/0
-        --allow-resolve=*
+    COMMAND ${IWASM_AND_PARAMS}
         multi.wasm
         ${DEPS_INSTALL_DIR}/ssl/certs/
         https://github.com/
         https://amazon.com/
+)
+
+add_test(
+    NAME curl_exe_get
+    COMMAND ${IWASM_AND_PARAMS}
+    --stack-size=131072
+    ${DEPS_INSTALL_DIR}/bin/curl.wasm
+    --capath ${DEPS_INSTALL_DIR}/ssl/certs/
+    https://github.com
+)
+
+add_test(
+    NAME curl_exe_post
+    COMMAND ${IWASM_AND_PARAMS}
+    --stack-size=131072
+    ${DEPS_INSTALL_DIR}/bin/curl.wasm
+    --capath ${DEPS_INSTALL_DIR}/ssl/certs/
+    -X POST -d 'test' https://httpbin.org/post
 )

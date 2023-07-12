@@ -1,28 +1,33 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index babc50086..a8321eeb8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1391,6 +1391,9 @@ function(transform_makefile_inc INPUT_FILE OUTPUT_FILE)
+   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${INPUT_FILE}")
+ endfunction()
+ 
++include(${WAMR_ROOT_DIR}/core/iwasm/libraries/lib-socket/lib_socket_wasi.cmake)
++set(CMAKE_EXECUTABLE_SUFFIX .wasm)
++
+ include(GNUInstallDirs)
+ 
+ set(CURL_INSTALL_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
-index c44639d30..3750d1959 100644
+index c44639d30..6bd35a1cf 100644
 --- a/lib/CMakeLists.txt
 +++ b/lib/CMakeLists.txt
-@@ -21,6 +21,8 @@
- # SPDX-License-Identifier: curl
- #
- ###########################################################################
-+
-+include(${WAMR_ROOT_DIR}/core/iwasm/libraries/lib-socket/lib_socket_wasi.cmake)
- set(LIB_NAME libcurl)
- set(LIBCURL_OUTPUT_NAME libcurl CACHE STRING "Basename of the curl library")
- add_definitions(-DBUILDING_LIBCURL)
-@@ -79,7 +81,7 @@ if(NOT BUILD_SHARED_LIBS)
+@@ -79,7 +79,7 @@ if(NOT BUILD_SHARED_LIBS)
      set_target_properties(${LIB_NAME} PROPERTIES INTERFACE_COMPILE_DEFINITIONS CURL_STATICLIB)
  endif()
-
+ 
 -target_link_libraries(${LIB_NAME} PRIVATE ${CURL_LIBS})
-+target_link_libraries(${LIB_NAME} PRIVATE socket_wasi_ext ${CURL_LIBS})
-
++target_link_libraries(${LIB_NAME} PRIVATE ${CURL_LIBS} PUBLIC socket_wasi_ext)
+ 
  transform_makefile_inc("Makefile.soname" "${CMAKE_CURRENT_BINARY_DIR}/Makefile.soname.cmake")
  include(${CMAKE_CURRENT_BINARY_DIR}/Makefile.soname.cmake)
-@@ -155,14 +157,14 @@ target_include_directories(${LIB_NAME} INTERFACE
+@@ -155,14 +155,14 @@ target_include_directories(${LIB_NAME} INTERFACE
    $<BUILD_INTERFACE:${CURL_SOURCE_DIR}/include>)
-
+ 
  if(CURL_ENABLE_EXPORT_TARGET)
 -  install(TARGETS ${LIB_NAME}
 +  install(TARGETS ${LIB_NAME} socket_wasi_ext
@@ -31,7 +36,7 @@ index c44639d30..3750d1959 100644
      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
    )
-
+ 
 -  export(TARGETS ${LIB_NAME}
 +  export(TARGETS ${LIB_NAME} socket_wasi_ext
           FILE ${PROJECT_BINARY_DIR}/libcurl-target.cmake
@@ -44,7 +49,7 @@ index 38cf6ffc1..c20574d8a 100644
 @@ -248,6 +248,14 @@
  #  include "setup-win32.h"
  #endif
-
+ 
 +/*
 + * WebAssembly/WASI setup file includes some system headers and definitions.
 + */
@@ -54,11 +59,11 @@ index 38cf6ffc1..c20574d8a 100644
 +#endif
 +
  #include <curl/system.h>
-
+ 
  /*
 diff --git a/lib/setup-wasm32-wasi.h b/lib/setup-wasm32-wasi.h
 new file mode 100644
-index 000000000..470b8847f
+index 000000000..af38658a6
 --- /dev/null
 +++ b/lib/setup-wasm32-wasi.h
 @@ -0,0 +1,70 @@
@@ -132,3 +137,18 @@ index 000000000..470b8847f
 +};
 +
 +#endif /* HEADER_CURL_SETUP_WASM32_WASI_H */
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 0aa839815..60862f5db 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -76,6 +76,10 @@ add_executable(
+   ALIAS ${EXE_NAME}
+   )
+ 
++target_link_options(${EXE_NAME} PRIVATE
++    LINKER:--shared-memory,--max-memory=8388608
++)
++
+ if(CURL_HAS_LTO)
+   set_target_properties(${EXE_NAME} PROPERTIES
+     INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE
