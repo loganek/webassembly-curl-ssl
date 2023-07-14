@@ -2,9 +2,6 @@ include(ExternalProject)
 
 set(WASI_SDK_DIR ${CMAKE_SOURCE_DIR}/wasi-sdk-20.0)
 
-set(OPENSSL_INSTALL_DIR ${DEPS_INSTALL_DIR})
-set(OPENSSL_INCLUDE_DIR ${OPENSSL_INSTALL_DIR}/include)
-
 ExternalProject_Add(
     OpenSSL
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -44,13 +41,14 @@ ExternalProject_Add(
     INSTALL_COMMAND make install
 )
 
-# This needs to exist in advance
-file(MAKE_DIRECTORY ${OPENSSL_INCLUDE_DIR})
-
 add_library(OpenSSL::SSL STATIC IMPORTED GLOBAL)
-set_property(TARGET OpenSSL::SSL PROPERTY IMPORTED_LOCATION ${OPENSSL_INSTALL_DIR}/lib/libssl.a)
+set_target_properties(OpenSSL::SSL PROPERTIES
+    IMPORTED_LOCATION ${DEPS_INSTALL_DIR}/lib/libssl.a
+)
 add_dependencies(OpenSSL::SSL OpenSSL)
 
 add_library(OpenSSL::Crypto STATIC IMPORTED GLOBAL)
-set_property(TARGET OpenSSL::Crypto PROPERTY IMPORTED_LOCATION ${OPENSSL_INSTALL_DIR}/lib/libcrypto.a)
+set_target_properties(OpenSSL::Crypto PROPERTIES
+    IMPORTED_LOCATION ${DEPS_INSTALL_DIR}/lib/libcrypto.a
+)
 add_dependencies(OpenSSL::Crypto OpenSSL)

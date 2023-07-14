@@ -20,17 +20,19 @@ ExternalProject_Add(
         -DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}
 )
 
-add_dependencies(curl OpenSSL wasm-micro-runtime zlib)
+set(CURL_DEPENDENCIES
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    libsocket_wasi_ext
+    libzlib
+)
 
-# This needs to exist in advance
-file(MAKE_DIRECTORY ${DEPS_INSTALL_DIR}/include)
-
-add_library(libsocket_wasi_ext STATIC IMPORTED GLOBAL)
-set_property(TARGET libsocket_wasi_ext PROPERTY IMPORTED_LOCATION ${DEPS_INSTALL_DIR}/lib/libsocket_wasi_ext.a)
-add_dependencies(libsocket_wasi_ext wasm-micro-runtime)
+add_dependencies(curl ${CURL_DEPENDENCIES})
 
 add_library(libcurl STATIC IMPORTED GLOBAL)
-set_property(TARGET libcurl PROPERTY IMPORTED_LOCATION ${DEPS_INSTALL_DIR}/lib/libcurl.a)
-set_property(TARGET libcurl PROPERTY INTERFACE_INCLUDE_DIRECTORIES ${DEPS_INSTALL_DIR}/include)
-
+set_target_properties(libcurl PROPERTIES
+    IMPORTED_LOCATION ${DEPS_INSTALL_DIR}/lib/libcurl.a
+    INTERFACE_INCLUDE_DIRECTORIES ${DEPS_INSTALL_DIR}/include
+    INTERFACE_LINK_LIBRARIES "${CURL_DEPENDENCIES}"
+)
 add_dependencies(libcurl curl)

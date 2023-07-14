@@ -2,7 +2,7 @@ set(CMAKE_EXECUTABLE_SUFFIX ".wasm")
 
 function(create_example example_name)
     add_executable(${example_name} ${example_name}.c)
-    target_link_libraries(${example_name} libcurl libsocket_wasi_ext OpenSSL::SSL OpenSSL::Crypto libzlib)
+    target_link_libraries(${example_name} libcurl)
 
     target_link_options(${example_name} PRIVATE
         -z stack-size=16777216

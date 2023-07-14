@@ -14,12 +14,11 @@ ExternalProject_Add(
     BUILD_COMMAND
         ${CMAKE_COMMAND} --build ${ZLIB_BUILD_DIR} --target zlibstatic
     INSTALL_COMMAND
+        # zlib doesn't allow disabling shared library build; install target requires
+        # building zlib's shared library so we avoid it.
         ${CMAKE_COMMAND} -E copy ${ZLIB_BUILD_DIR}/libzlibstatic.a ${DEPS_INSTALL_DIR}/lib/libz.a &&
         ${CMAKE_COMMAND} -E copy ${ZLIB_BUILD_DIR}/zconf.h ${CMAKE_CURRENT_SOURCE_DIR}/src/zlib.h ${DEPS_INSTALL_DIR}/include
 )
-
-# This needs to exist in advance
-file(MAKE_DIRECTORY ${DEPS_INSTALL_DIR}/include)
 
 add_library(libzlib STATIC IMPORTED GLOBAL)
 set_target_properties(libzlib PROPERTIES

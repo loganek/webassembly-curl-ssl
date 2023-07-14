@@ -20,6 +20,9 @@ add_subdirectory(libs/zlib)
 enable_testing()
 add_subdirectory(tests)
 
+# This needs to exist in advance
+file(MAKE_DIRECTORY ${DEPS_INSTALL_DIR}/include)
+
 install(DIRECTORY
     ${DEPS_INSTALL_DIR}/lib/
     TYPE LIB)
