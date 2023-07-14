@@ -15,6 +15,7 @@ set(DEPS_INSTALL_DIR ${CMAKE_BINARY_DIR}/libs_install)
 add_subdirectory(libs/wasm-micro-runtime)
 add_subdirectory(libs/openssl)
 add_subdirectory(libs/curl)
+add_subdirectory(libs/zlib)
 
 enable_testing()
 add_subdirectory(tests)

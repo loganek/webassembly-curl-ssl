@@ -2,7 +2,7 @@ set(CMAKE_EXECUTABLE_SUFFIX ".wasm")
 
 function(create_example example_name)
     add_executable(${example_name} ${example_name}.c)
-    target_link_libraries(${example_name} libcurl libsocket_wasi_ext OpenSSL::SSL OpenSSL::Crypto)
+    target_link_libraries(${example_name} libcurl libsocket_wasi_ext OpenSSL::SSL OpenSSL::Crypto libzlib)
 
     target_link_options(${example_name} PRIVATE
         -z stack-size=16777216
@@ -12,6 +12,7 @@ endfunction()
 
 create_example(simple)
 create_example(multi)
+create_example(encoding)
 
 set(IWASM_AND_PARAMS
     ${DEPS_INSTALL_DIR}/bin/iwasm
@@ -35,6 +36,14 @@ add_test(
         ${DEPS_INSTALL_DIR}/ssl/certs/
         https://github.com/
         https://amazon.com/
+)
+
+add_test(
+    NAME encoding
+    COMMAND ${IWASM_AND_PARAMS}
+        encoding.wasm
+        ${DEPS_INSTALL_DIR}/ssl/certs/
+        https://github.com/
 )
 
 add_test(

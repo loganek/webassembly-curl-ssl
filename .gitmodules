@@ -7,3 +7,6 @@
 [submodule "libs/openssl/src"]
 	path = libs/openssl/src
 	url = https://github.com/openssl/openssl.git
+[submodule "libs/zlib/src"]
+	path = libs/zlib/src
+	url = https://github.com/madler/zlib.git
