@@ -9,6 +9,7 @@ ExternalProject_Add(
         -DCMAKE_TOOLCHAIN_FILE=${WASI_SDK_DIR}/share/cmake/wasi-sdk-pthread.cmake
         -DWASI_SDK_PREFIX=${WASI_SDK_DIR}
         -DCURL_ENABLE_EXPORT_TARGET=ON
+        -DENABLE_WEBSOCKETS=ON
         -DCURL_USE_OPENSSL=ON
         -DOPENSSL_ROOT_DIR=${DEPS_INSTALL_DIR}
         -DZLIB_INCLUDE_DIR=${DEPS_INSTALL_DIR}/include

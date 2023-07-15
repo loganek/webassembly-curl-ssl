@@ -13,6 +13,7 @@ endfunction()
 create_example(simple)
 create_example(multi)
 create_example(encoding)
+create_example(websockets)
 
 set(IWASM_AND_PARAMS
     ${DEPS_INSTALL_DIR}/bin/iwasm
@@ -44,6 +45,15 @@ add_test(
         encoding.wasm
         ${DEPS_INSTALL_DIR}/ssl/certs/
         https://github.com/
+)
+
+add_test(
+    NAME websockets
+    COMMAND ${IWASM_AND_PARAMS}
+        websockets.wasm
+        ${DEPS_INSTALL_DIR}/ssl/certs/
+        wss://ws.postman-echo.com/raw
+        ECHO
 )
 
 add_test(

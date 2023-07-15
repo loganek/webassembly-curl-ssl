@@ -22,10 +22,10 @@ The project was only tested on Ubuntu 20.04 and 22.04. It will most likely compi
 - [X] threadsafe
 - [X] CURL executable
 - [X] compression (zlib)
+- [X] WebSocket
 ### Missing features
 - [ ] compression (brotli)
 - [ ] c-ares
-- [ ] websockets
 - [ ] ...
 
 ## Custom patches
