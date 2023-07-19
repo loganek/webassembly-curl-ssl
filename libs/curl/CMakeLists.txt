@@ -6,8 +6,8 @@ ExternalProject_Add(
     PATCH_COMMAND patch -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/curl.patch
     CMAKE_ARGS
         -DWAMR_ROOT_DIR=${CMAKE_SOURCE_DIR}/libs/wasm-micro-runtime/src
-        -DCMAKE_TOOLCHAIN_FILE=${WASI_SDK_DIR}/share/cmake/wasi-sdk-pthread.cmake
-        -DWASI_SDK_PREFIX=${WASI_SDK_DIR}
+        -DCMAKE_TOOLCHAIN_FILE=${WASI_SDK_PREFIX}/share/cmake/wasi-sdk-pthread.cmake
+        -DWASI_SDK_PREFIX=${WASI_SDK_PREFIX}
         -DCURL_ENABLE_EXPORT_TARGET=ON
         -DENABLE_WEBSOCKETS=ON
         -DCURL_USE_OPENSSL=ON

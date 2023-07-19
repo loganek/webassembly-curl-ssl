@@ -6,8 +6,8 @@ ExternalProject_Add(
     zlib
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/
     CMAKE_ARGS
-        -DCMAKE_TOOLCHAIN_FILE=${WASI_SDK_DIR}/share/cmake/wasi-sdk-pthread.cmake
-        -DWASI_SDK_PREFIX=${WASI_SDK_DIR}
+        -DCMAKE_TOOLCHAIN_FILE=${WASI_SDK_PREFIX}/share/cmake/wasi-sdk-pthread.cmake
+        -DWASI_SDK_PREFIX=${WASI_SDK_PREFIX}
         -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_INSTALL_PREFIX=${DEPS_INSTALL_DIR}
         -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON

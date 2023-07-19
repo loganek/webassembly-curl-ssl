@@ -1,7 +1,5 @@
 include(ExternalProject)
 
-set(WASI_SDK_DIR ${CMAKE_SOURCE_DIR}/wasi-sdk-20.0)
-
 ExternalProject_Add(
     OpenSSL
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -29,9 +27,9 @@ ExternalProject_Add(
             no-weak-ssl-ciphers
             no-afalgeng
             CROSSCOMPILE=""
-            AR=${WASI_SDK_DIR}/bin/llvm-ar
-            RANLIB=${WASI_SDK_DIR}/bin/llvm-ranlib
-            "CC=${WASI_SDK_DIR}/bin/clang --target=wasm32-wasi-threads"
+            AR=${WASI_SDK_PREFIX}/bin/llvm-ar
+            RANLIB=${WASI_SDK_PREFIX}/bin/llvm-ranlib
+            "CC=${WASI_SDK_PREFIX}/bin/clang --target=wasm32-wasi-threads"
             "CPPFLAGS=-Dgetpid=getpagesize"
     BUILD_COMMAND
         make -j ${CPU_COUNT}
